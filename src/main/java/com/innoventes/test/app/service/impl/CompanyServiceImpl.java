@@ -3,6 +3,7 @@ package com.innoventes.test.app.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.innoventes.test.app.dto.CompanyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +53,42 @@ public class CompanyServiceImpl implements CompanyService {
 						String.format(serviceHelper.getLocalizedMessage(ApplicationErrorCodes.COMPANY_NOT_FOUND), id),
 						ApplicationErrorCodes.COMPANY_NOT_FOUND));
 		companyRepository.deleteById(existingCompanyRecord.getId());
+	}
+
+	@Override
+	public CompanyDTO findCompanyById(Long id) {
+		Company company=companyRepository.findById(id).orElseThrow(() ->
+				new ResourceNotFoundException("company not found with id :"+id,"COMPANY_NOT_FOUND"));
+		CompanyDTO dto = new CompanyDTO();
+		dto.setCompanyName(company.getCompanyName());
+		dto.setEmail(company.getEmail());
+		dto.setId(company.getId());
+		dto.setCompanyCode(company.getCompanyCode());
+		dto.setStrength(company.getStrength());
+		dto.setWebSiteURL(company.getWebSiteURL());
+		return dto;
+	}
+
+	@Override
+	public CompanyDTO findbyCompanyCode(String companyCode) {
+		Company company=companyRepository.findByCompanyCode(companyCode).get();
+		CompanyDTO dto = new CompanyDTO();
+		dto.setCompanyName(company.getCompanyName());
+		dto.setEmail(company.getEmail());
+		dto.setId(company.getId());
+		dto.setStrength(company.getStrength());
+		dto.setWebSiteURL(company.getWebSiteURL());
+		return dto;
+	}
+
+	@Override
+	public CompanyDTO partialUpdateCompany(Long id, CompanyDTO companyDTO) {
+
+		Company company=new Company();
+		company.setId(companyDTO.getId());
+		Company savedCompany=companyRepository.save(company);
+		CompanyDTO dto = new CompanyDTO();
+		dto.setId(savedCompany.getId());
+		return dto;
 	}
 }
